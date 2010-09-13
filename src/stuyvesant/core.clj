@@ -48,10 +48,50 @@
         path (if id (str name "/" id) name)]
     (zip-str (:body (authed-request method (str "/" path ".xml"))))))
 
-(defn person [id])
+(defn text-of-first [x,f] (xml1-> x f text))
+  
+(defn hashify [xmlel & exclusions]
+  (let [exclusions (set exclusions)
+        content (:content (first xmlel))]
+    (apply hash-map
+           (flatten
+            (map
+             (fn [x] (let [t (:tag x)]
+                       (if (not (contains? exclusions t))
+                         [(:tag x) (xml1-> xmlel t text)]
+                         []
+                         )))
+             content)))))
+
+(defn build-person [p]
+  (merge
+   {:email-address
+    (xml1-> p :contact-data :email-addresses :email-address :address text)
+    :phone-number
+    (xml1-> p :contact-data :phone-numbers :phone-number :number text)
+    :name
+    (str (text-of-first p :first-name) " " (text-of-first p :last-name))}
+   (hashify p :contact-data)))
+
+(defn person [id]
+  (build-person (resource "people" id)))
+
+(defn build-company [c]
+  (merge
+   {:email-address
+    (xml1-> c :contact-data :email-addresses :email-address :address text)
+    :phone-number
+    (xml1-> c :contact-data :phone-numbers :phone-number :number text)}
+   (hashify c :contact-data)))
+
+(defn company [id]
+  (build-company (resource "companies" id)))
+
+;; (defn people []
+;;   (map build-person (:content (first (resource "people")))))
 
 (defn runtest []
   (site "https://twitpay.highrisehq.com")
   (user "6b24c27dc4bd4cdb2027fe7f568fc27d")
-  
-  (xml-> (resource "people" 45664714) :first-name))
+  (person 45664714))
+
