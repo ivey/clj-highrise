@@ -1,4 +1,4 @@
-(defproject stuyvesant "0.0.1"
+(defproject clj-highrise "0.0.1"
   :description "Library for accessing the 37 Signals Highrise API"
   :dependencies [[org.clojure/clojure "1.2.0-beta1"]
                  [org.clojure/clojure-contrib "1.2.0-beta1"]

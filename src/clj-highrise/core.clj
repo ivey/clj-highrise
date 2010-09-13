@@ -1,4 +1,4 @@
-(ns stuyvesant.core
+(ns clj-highrise.core
   (:require [clj-http.client :as client]
             [clojure.contrib.java-utils :only (as-url) :as jutils]
             [clojure.xml :as xml]
